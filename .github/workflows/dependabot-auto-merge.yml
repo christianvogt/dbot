@@ -14,9 +14,27 @@ jobs:
     if: >
       github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
+      - name: Debug event context
+        run: |
+          echo "PR author: ${{ github.event.pull_request.user.login }}"
+          echo "PR URL: ${{ github.event.pull_request.html_url }}"
+          echo "PR number: ${{ github.event.pull_request.number }}"
+          echo "PR title: ${{ github.event.pull_request.title }}"
+          echo "Event action: ${{ github.event.action }}"
+
       - name: Dependabot metadata
         id: metadata
         uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3
+
+      - name: Debug metadata outputs
+        run: |
+          echo "Dependency names: ${{ steps.metadata.outputs.dependency-names }}"
+          echo "Update type: ${{ steps.metadata.outputs.update-type }}"
+          echo "Updated dependencies count: ${{ steps.metadata.outputs.dependency-type }}"
+          echo "Package ecosystem: ${{ steps.metadata.outputs.package-ecosystem }}"
+          echo "Previous version: ${{ steps.metadata.outputs.previous-version }}"
+          echo "New version: ${{ steps.metadata.outputs.new-version }}"
+          echo "Compatibility score: ${{ steps.metadata.outputs.compatibility-score }}"
 
       - name: Apply merge labels for patch updates
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
@@ -24,4 +42,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
+          echo "Applying labels to PR: $PR_URL"
           gh pr edit "$PR_URL" --add-label "lgtm,approved"
+          echo "Labels applied successfully"
+
+      - name: Debug skip reason
+        if: steps.metadata.outputs.update-type != 'version-update:semver-patch'
+        run: |
+          echo "Skipping auto-merge: update-type is '${{ steps.metadata.outputs.update-type }}', not 'version-update:semver-patch'"
