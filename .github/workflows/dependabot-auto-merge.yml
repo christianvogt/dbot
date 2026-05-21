@@ -12,8 +12,7 @@ jobs:
   auto-merge:
     runs-on: ubuntu-latest
     if: >
-      github.event.pull_request.user.login == 'dependabot[bot]' &&
-      github.repository == 'opendatahub-io/odh-dashboard'
+      github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
       - name: Dependabot metadata
         id: metadata
