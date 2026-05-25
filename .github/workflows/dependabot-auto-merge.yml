@@ -12,47 +12,57 @@ jobs:
   auto-merge:
     runs-on: ubuntu-latest
     if: >
-      github.event.pull_request.user.login == 'dependabot[bot]'
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.repository == 'opendatahub-io/odh-dashboard'
     steps:
-      - name: Debug event context
-        run: |
-          echo "PR author: ${{ github.event.pull_request.user.login }}"
-          echo "PR URL: ${{ github.event.pull_request.html_url }}"
-          echo "PR number: ${{ github.event.pull_request.number }}"
-          echo "PR title: ${{ github.event.pull_request.title }}"
-          echo "Event action: ${{ github.event.action }}"
-
       - name: Dependabot metadata
         id: metadata
         uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3
 
-      - name: Debug metadata outputs
+      - name: Check eligibility
+        id: check
         run: |
-          echo "Dependency names: ${{ steps.metadata.outputs.dependency-names }}"
-          echo "Update type: ${{ steps.metadata.outputs.update-type }}"
-          echo "Updated dependencies count: ${{ steps.metadata.outputs.dependency-type }}"
-          echo "Package ecosystem: ${{ steps.metadata.outputs.package-ecosystem }}"
-          echo "Previous version: ${{ steps.metadata.outputs.previous-version }}"
-          echo "New version: ${{ steps.metadata.outputs.new-version }}"
-          echo "Compatibility score: ${{ steps.metadata.outputs.compatibility-score }}"
+          ecosystem="${{ steps.metadata.outputs.package-ecosystem }}"
+          update_type="${{ steps.metadata.outputs.update-type }}"
 
-      - name: Apply merge labels for patch/minor updates
-        if: >
-          steps.metadata.outputs.package-ecosystem == 'npm_and_yarn' &&
-          (steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
-           steps.metadata.outputs.update-type == 'version-update:semver-minor')
+          echo "PR:         ${{ github.event.pull_request.html_url }}"
+          echo "ecosystem:  $ecosystem"
+          echo "update-type: $update_type"
+          echo "dependency: ${{ steps.metadata.outputs.dependency-names }}"
+          echo "version:    ${{ steps.metadata.outputs.previous-version }} → ${{ steps.metadata.outputs.new-version }}"
+
+          if [ "$ecosystem" != "npm_and_yarn" ]; then
+            echo "::notice::Skipping: ecosystem is '$ecosystem', not npm"
+            echo "eligible=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "$update_type" = "version-update:semver-patch" ] || [ "$update_type" = "version-update:semver-minor" ]; then
+            echo "::notice::Eligible for auto-merge ($update_type)"
+            echo "eligible=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Skipping: update-type '$update_type' is not minor or patch"
+            echo "eligible=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Apply merge labels
+        if: steps.check.outputs.eligible == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
-          echo "Applying labels to PR: $PR_URL"
+          echo "Adding lgtm and approved labels to $PR_URL"
           gh pr edit "$PR_URL" --add-label "lgtm,approved"
-          echo "Labels applied successfully"
+          echo "::notice::Labels applied successfully"
 
-      - name: Debug skip reason
-        if: >
-          steps.metadata.outputs.package-ecosystem != 'npm_and_yarn' ||
-          (steps.metadata.outputs.update-type != 'version-update:semver-patch' &&
-           steps.metadata.outputs.update-type != 'version-update:semver-minor')
+      - name: Summary
         run: |
-          echo "Skipping auto-merge: ecosystem='${{ steps.metadata.outputs.package-ecosystem }}', update-type='${{ steps.metadata.outputs.update-type }}'"
+          if [ "${{ steps.check.outputs.eligible }}" = "true" ]; then
+            echo "### ✅ Auto-merge labels applied" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### ⏭️ Skipped — not eligible for auto-merge" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "- **Ecosystem:** \`${{ steps.metadata.outputs.package-ecosystem }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Update type:** \`${{ steps.metadata.outputs.update-type }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Dependency:** \`${{ steps.metadata.outputs.dependency-names }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Version:** \`${{ steps.metadata.outputs.previous-version }}\` → \`${{ steps.metadata.outputs.new-version }}\`" >> "$GITHUB_STEP_SUMMARY"
