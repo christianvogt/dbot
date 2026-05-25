@@ -10,21 +10,12 @@ updates:
     target-branch: "main"
     labels:
       - "dependencies"
-    ignore:
-      - dependency-name: "*"
-        update-types:
-          - "version-update:semver-major"
-          - "version-update:semver-minor"
     groups:
       patternfly:
         applies-to: version-updates
-        update-types:
-          - "patch"
         patterns:
           - "@patternfly/*"
-      patch-updates:
+      all:
         applies-to: version-updates
-        update-types:
-          - "patch"
         exclude-patterns:
           - "@patternfly/*"
