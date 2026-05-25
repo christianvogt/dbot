@@ -36,8 +36,11 @@ jobs:
           echo "New version: ${{ steps.metadata.outputs.new-version }}"
           echo "Compatibility score: ${{ steps.metadata.outputs.compatibility-score }}"
 
-      - name: Apply merge labels for patch updates
-        if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
+      - name: Apply merge labels for patch/minor updates
+        if: >
+          steps.metadata.outputs.package-ecosystem == 'npm_and_yarn' &&
+          (steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+           steps.metadata.outputs.update-type == 'version-update:semver-minor')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
@@ -47,6 +50,9 @@ jobs:
           echo "Labels applied successfully"
 
       - name: Debug skip reason
-        if: steps.metadata.outputs.update-type != 'version-update:semver-patch'
+        if: >
+          steps.metadata.outputs.package-ecosystem != 'npm_and_yarn' ||
+          (steps.metadata.outputs.update-type != 'version-update:semver-patch' &&
+           steps.metadata.outputs.update-type != 'version-update:semver-minor')
         run: |
-          echo "Skipping auto-merge: update-type is '${{ steps.metadata.outputs.update-type }}', not 'version-update:semver-patch'"
+          echo "Skipping auto-merge: ecosystem='${{ steps.metadata.outputs.package-ecosystem }}', update-type='${{ steps.metadata.outputs.update-type }}'"
