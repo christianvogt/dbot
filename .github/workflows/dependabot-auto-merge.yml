@@ -24,23 +24,12 @@ jobs:
           ecosystem="${{ steps.metadata.outputs.package-ecosystem }}"
           update_type="${{ steps.metadata.outputs.update-type }}"
 
-          echo "PR:         ${{ github.event.pull_request.html_url }}"
-          echo "ecosystem:  $ecosystem"
-          echo "update-type: $update_type"
-          echo "dependency: ${{ steps.metadata.outputs.dependency-names }}"
-          echo "version:    ${{ steps.metadata.outputs.previous-version }} → ${{ steps.metadata.outputs.new-version }}"
-
-          if [ "$ecosystem" != "npm_and_yarn" ]; then
-            echo "::notice::Skipping: ecosystem is '$ecosystem', not npm"
-            echo "eligible=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          if [ "$update_type" = "version-update:semver-patch" ] || [ "$update_type" = "version-update:semver-minor" ]; then
-            echo "::notice::Eligible for auto-merge ($update_type)"
+          if [ "$ecosystem" = "npm_and_yarn" ] && \
+             { [ "$update_type" = "version-update:semver-patch" ] || [ "$update_type" = "version-update:semver-minor" ]; }; then
+            echo "Eligible: ecosystem=$ecosystem, update-type=$update_type"
             echo "eligible=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::notice::Skipping: update-type '$update_type' is not minor or patch"
+            echo "Not eligible: ecosystem=$ecosystem, update-type=$update_type"
             echo "eligible=false" >> "$GITHUB_OUTPUT"
           fi
 
@@ -56,12 +45,17 @@ jobs:
 
       - name: Summary
         run: |
+          deps="${{ steps.metadata.outputs.dependency-names }}"
+
           if [ "${{ steps.check.outputs.eligible }}" = "true" ]; then
-            echo "### ✅ Auto-merge labels applied" >> "$GITHUB_STEP_SUMMARY"
+            echo "### ✅ Auto-merge labels applied" | tee -a "$GITHUB_STEP_SUMMARY"
           else
-            echo "### ⏭️ Skipped — not eligible for auto-merge" >> "$GITHUB_STEP_SUMMARY"
+            echo "### ⏭️ Skipped — not eligible for auto-merge" | tee -a "$GITHUB_STEP_SUMMARY"
           fi
-          echo "- **Ecosystem:** \`${{ steps.metadata.outputs.package-ecosystem }}\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Update type:** \`${{ steps.metadata.outputs.update-type }}\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Dependency:** \`${{ steps.metadata.outputs.dependency-names }}\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Version:** \`${{ steps.metadata.outputs.previous-version }}\` → \`${{ steps.metadata.outputs.new-version }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Ecosystem:** \`${{ steps.metadata.outputs.package-ecosystem }}\`" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "- **Update type:** \`${{ steps.metadata.outputs.update-type }}\`" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "- **Dependencies:** \`$deps\`" | tee -a "$GITHUB_STEP_SUMMARY"
+
+          if ! echo "$deps" | grep -q ","; then
+            echo "- **Version:** \`${{ steps.metadata.outputs.previous-version }}\` → \`${{ steps.metadata.outputs.new-version }}\`" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
