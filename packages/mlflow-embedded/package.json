@@ -52,7 +52,7 @@
     "@odh-dashboard/tsconfig": "*"
   },
   "peerDependencies": {
-    "@module-federation/runtime": ">=0.15.0",
+    "@module-federation/runtime": "^0.24.1",
     "@patternfly/react-core": "^6",
     "@patternfly/react-icons": "^6",
     "react": "^18",

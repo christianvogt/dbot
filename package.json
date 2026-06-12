@@ -73,7 +73,7 @@
     "start:dev:ext": "turbo run start:dev:ext"
   },
   "dependencies": {
-    "@kubernetes/client-node": "^0.12.3",
+    "@kubernetes/client-node": "^0.22.3",
     "@openshift/dynamic-plugin-sdk-utils": "^5.0.1",
     "@types/tar": "^6.1.13",
     "jsonpath-plus": "^10.4.0",
@@ -96,7 +96,7 @@
     "turbo": "^2.9.16",
     "typescript": "^5.9.3",
     "wait-on": "^7.2.0",
-    "webpack": "5.104.1"
+    "webpack": "5.107.2"
   },
   "lint-staged": {
     "**/*.{js,ts,jsx,tsx,md}": [
@@ -132,6 +132,6 @@
     "form-data": "^4.0.5",
     "axios": "^1.17.0",
     "shell-quote": ">=1.8.4",
-    "webpack": "5.104.1"
+    "webpack": "5.107.2"
   }
 }
