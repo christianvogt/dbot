@@ -3,7 +3,9 @@
   "name": "@odh-dashboard/llmd-serving",
   "description": "Support for LLM-d model serving deployments via kserve",
   "version": "0.0.0",
-  "e2eCiTags": ["@LLMDServingCI"],
+  "e2eCiTags": [
+    "@LLMDServingCI"
+  ],
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -34,6 +36,6 @@
     "@openshift/dynamic-plugin-sdk-utils": "^5",
     "@patternfly/react-core": "^6",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18.3.1"
   }
 }
