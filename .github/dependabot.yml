@@ -26,11 +26,19 @@ updates:
       semver-minor-days: 14
       semver-patch-days: 14
 
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+
     groups:
       patternfly:
         applies-to: version-updates
         patterns:
           - "@patternfly/*"
+        update-types:
+          - "minor"
+          - "patch"
       react:
         applies-to: version-updates
         patterns:
@@ -38,12 +46,21 @@ updates:
           - 'react-dom'
           - 'react-router'
           - 'react-router-dom'
+        update-types:
+          - "minor"
+          - "patch"
       fastify:
         applies-to: version-updates
         patterns:
           - '@fastify/*'
           - 'fastify*'
+        update-types:
+          - "minor"
+          - "patch"
       all:
         applies-to: version-updates
         patterns:
           - '*'
+        update-types:
+          - "minor"
+          - "patch"
