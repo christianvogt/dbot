@@ -3,7 +3,9 @@
   "name": "@odh-dashboard/model-training",
   "description": "Model training plugin for managing training jobs and experiments.",
   "version": "0.0.0",
-  "e2eCiTags": ["@ModelTrainingCI"],
+  "e2eCiTags": [
+    "@ModelTrainingCI"
+  ],
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -31,10 +33,10 @@
   },
   "peerDependencies": {
     "@openshift/dynamic-plugin-sdk-utils": "^5",
-    "@patternfly/react-core": "^6",
+    "@patternfly/react-core": "^6.5.1",
     "@patternfly/react-icons": "^6",
-    "@patternfly/react-log-viewer": "^6",
-    "@patternfly/react-table": "^6",
+    "@patternfly/react-log-viewer": "^6.5.0",
+    "@patternfly/react-table": "^6.6.0",
     "@patternfly/react-tokens": "^6",
     "react": "^18",
     "react-dom": "^18",

@@ -3,7 +3,9 @@
   "name": "@odh-dashboard/feature-store",
   "description": "Feature store plugin for managing feature engineering and data pipelines.",
   "version": "0.0.0",
-  "e2eCiTags": ["@FeatureStoreCI"],
+  "e2eCiTags": [
+    "@FeatureStoreCI"
+  ],
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -55,12 +57,12 @@
     "@odh-dashboard/tsconfig": "*"
   },
   "peerDependencies": {
-    "@patternfly/react-core": "^6",
+    "@patternfly/react-core": "^6.5.1",
     "@patternfly/react-icons": "^6",
     "@patternfly/react-styles": "^6",
-    "@patternfly/react-table": "^6",
+    "@patternfly/react-table": "^6.6.0",
     "@patternfly/react-tokens": "^6",
-    "@patternfly/react-topology": "^6",
+    "@patternfly/react-topology": "^6.6.0",
     "react": "^18",
     "react-dom": "^18",
     "react-router": "^7",
