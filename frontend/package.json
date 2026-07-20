@@ -97,7 +97,7 @@
     "@patternfly/react-tokens": "^6.5.1",
     "@patternfly/react-topology": "^6.5.0",
     "@segment/analytics-next": "^1.84.0",
-    "axios": "^1.17.0",
+    "axios": "^1.18.1",
     "classnames": "^2.5.1",
     "compare-versions": "^3.6.0",
     "dompurify": "^3.4.8",
@@ -248,6 +248,6 @@
     "dompurify": "^3.4.8",
     "redux": "^4.2.1",
     "form-data": "^4.0.5",
-    "axios": "^1.17.0"
+    "axios": "^1.18.1"
   }
 }
