@@ -84,7 +84,7 @@
     "@odh-dashboard/eslint-config": "*",
     "@types/node": "^22.19.19",
     "@types/react": "^18.3.31",
-    "concurrently": "^9.2.1",
+    "concurrently": "^9.2.4",
     "cross-env": "^10.1.0",
     "csstype": "^3.2.3",
     "dotenv": "^16.6.1",
@@ -131,7 +131,7 @@
     "redux": "^4.2.1",
     "form-data": "^4.0.5",
     "axios": "^1.17.0",
-    "shell-quote": ">=1.8.4",
+    "shell-quote": ">=1.10.0",
     "webpack": "5.104.1"
   }
 }
